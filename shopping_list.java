@@ -14,17 +14,19 @@ public class shopping_list {
     {
     	
     	//initialize and declare global vars
-    	int checkoutFlag = 0;
+    	int checkoutFlag	= 0;
     	String optionOne	= "(1) View Items in Cart";
     	String optionTwo	= "(2) Add Items to Cart";
     	String optionThree	= "(3) Purchase/Checkout";
     	String optionFour	= "(4) Show Menu Items";
-    	String optionFive	= "(5) Show Current Total";
+    	String optionFive	= "(5) Show Current Total and amount left in budget";
+    	String optionZero	= "(0) Exit the program";
     	String option		= "";
-    	
+    	String name			= "";
+    	int nameLength		= 0;
     	String itemIdxs		= "";
-    	
-    	Float runTotal = 0.0f;
+    	Float budget		= 0.0f;
+    	Float runTotal		= 0.0f;
     	
     	//instantiate the handler
         UserInputHandler processInput = new UserInputHandler();
@@ -32,10 +34,55 @@ public class shopping_list {
         //instantiate the session cart
         MySessionCart userCart = new MySessionCart();
         
-        //Note to User:
-        System.out.println("Remember, you only have $59, this process will exit when your cart exceeds this cost.");
+       	//Prompt the user for first input 
+        name = processInput.getString("Please enter first name (i.e. Matthew): ");
         
-    	while (checkoutFlag == 0 && runTotal <= 59.00) {
+        //check against blank entries
+        if (name.length() == 0) {
+        	
+        	System.out.println("You did not enter anything. Please Try again.");
+        	name = processInput.getString("Please enter first name (i.e. Matthew): ");
+        	
+        } else {
+        	
+            
+            System.out.println(name);
+            
+            name += " ";
+            nameLength = name.length();
+
+            //Prompt the user for second input
+            while (nameLength == name.length()){
+
+    	        name += processInput.getString("Please enter last name (i.e. Tse): ");
+    	        
+    	        if (nameLength == name.length()) {
+    	        	
+    	        	System.out.println("You did not enter anything. Please Try again.");
+    	        	
+    	        }
+    	        
+            }
+            System.out.println(name);
+        }
+        
+       	//Prompt the user for first input 
+        budget = Float.parseFloat(processInput.getNum("Enter your budget (i.e. $59): ", 1));
+        
+        //check against blank entries
+        if (budget.SIZE == 0) {
+        	
+        	System.out.println("You did not enter anything. Please Try again.");
+        	budget = Float.parseFloat(processInput.getNum("Enter your budget (i.e. $59): ", 1));
+        	
+        } else {
+            
+            System.out.println("Your budget is $".concat(String.format("%.2f", budget, args)));
+            
+        }
+     
+        
+    	while (checkoutFlag == 0) {
     		
     		System.out.println("Please select an option.");
     		
@@ -44,27 +91,33 @@ public class shopping_list {
     						.concat(optionTwo).concat("\n")
     						.concat(optionThree).concat("\t")
     						.concat(optionFour).concat("\n")
-    						.concat(optionFive).concat("\n"))
+    						.concat(optionFive).concat("\n")
+    						.concat(optionZero).concat("\n"))
     						, 0);
     		
     		int select = Integer.parseInt(option);
     		
     		//Valid options
-    		if (select > 5 || select < 1) {
+    		if (select > 5 || select < 0) {
     			
     			System.out.print("Please select a valid option");
     		
     		//Checkout option
     		} else if (select == 3) {
-    			String displayPurchases = "";
+    			
+//    			String displayPurchases = "";
+    			
     			if (userCart.mappedItems.isEmpty() == true) {
     				
     				System.out.println("You do not have any items in your cart to purchase/checkout.");
     				
     			} else {
         	        
-    				displayPurchases = userCart.completePurchase(itemIdxs, runTotal);
-    				System.out.println(displayPurchases);
+//    				displayPurchases = userCart.completePurchase(itemIdxs, runTotal);
+    				userCart.completePurchase(itemIdxs, budget);
+    				
+//    				System.out.println(displayPurchases);
+    				
     			}
     			
     			
@@ -74,9 +127,14 @@ public class shopping_list {
     		
     		//Process options
     		} else {
-    	        
+    			
+    	        if (select == 0) {
+    	        	
+    	        	System.out.println("Thank you and goodbye");
+    	        	exit(0);
+    	        	
     	        //show menu
-    			if (select == 4) {
+    			} else if (select == 4) {
     				
         	        userCart.myStore.showCatalog();
     				
@@ -94,7 +152,7 @@ public class shopping_list {
 						
 						if (Integer.parseInt(priority) > Integer.parseInt(userCart.myStore.Qty)) {
 						
-							System.out.println("Please enter a valid priority");
+							System.out.println("Please enter a valid item number");
 					
 						}
 						
@@ -105,21 +163,28 @@ public class shopping_list {
 						priority = processInput.getNum("Enter the priority for this item (1-7) ", 0);
 						
 						if (Integer.parseInt(priority) > Integer.parseInt(userCart.myStore.Qty)) {
+							
 							System.out.println("Please enter a valid priority");
+							
 						}
 						
 					}//end while check for valid priorities
 					
-		            
 					
-					//add to a running Total
-					runTotal += userCart.getPricesInCart(itemNum);
+					if (itemIdxs != "") {
+						
+						runTotal = 0.0f;
+						runTotal = userCart.runningTotal(itemIdxs);
+						
+					}
 					
-					if (runTotal > 59) {
-						System.out.println("You cannot add to cart, more than $59");
+					if (runTotal > budget) {
+						
+						System.out.println("You cannot add to cart, more than you have in your budget");
 						
 						//adjust running Total
 						runTotal -= userCart.getPricesInCart(itemNum);
+						
 					} else {
 						
 			            itemIdxs += itemNum.concat("-");
@@ -146,8 +211,18 @@ public class shopping_list {
     				//check running total
     				if (select == 5) {
     					
+    					runTotal = 0.0f;
+    					
     					System.out.print("Your total is: $");
+
+    					runTotal = userCart.runningTotal(itemIdxs);
+    					
     					System.out.println(runTotal);
+    					if (budget >= runTotal) {
+    						System.out.println("Amount Left over: ");
+        					System.out.println(budget - runTotal);
+    					}
+    					
     					
     				}//end if running total display
     				

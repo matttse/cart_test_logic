@@ -6,13 +6,16 @@
  */
 
 import java.util.*;
+import java.io.*;
 
-public class MySessionCart implements Cart{
+public class MySessionCart implements Cart, Printer{
 	
 	private String cartDetail	= "";
 	protected String itemName	= "";
 	private String itemIdx		= "";
 	private String priorityIdx	= "";
+	private String shoppingListFile	= "shoppingList.txt";
+	
 	
 	Map<String, String> mappedItems = new TreeMap<String, String>();
 	
@@ -37,14 +40,15 @@ public class MySessionCart implements Cart{
 		if (mappedItems.isEmpty() != true) {
 			
 	        //check to see if user has already added item to their cart
-	        checkItem = process.getMatchedItems(itemIdx, itemNum);
+//	        checkItem = process.getMatchedItems(itemIdx, itemNum);
 	        
 	        checkPriority = process.getMatchedItems(priorityIdx, priority);
 	        
 		} 
         
         
-        if (checkItem == false && checkPriority == false) {
+//        if (checkItem == false && checkPriority == false) {
+        if (checkPriority == false) {
     		cartDetail += itemNum
     				.concat("-")
     				.concat(myStore.getItemName(Integer.parseInt(itemNum)))
@@ -56,10 +60,12 @@ public class MySessionCart implements Cart{
     		
     		itemIdx		+= itemNum.concat("-");
     		priorityIdx	+= priority.concat("-");
-    		
+    	
+    	/*taken out to allow multiples
         } else if (checkItem == true) {
         	
         	System.out.println("You already have this item in your cart.");
+        */
         	
         } else if (checkPriority == true) {
         	
@@ -137,11 +143,12 @@ public class MySessionCart implements Cart{
 	 * @Parameters: which item was added 
 	 * 
 	 * @Additional Comments: 
-	 * @Return: float running total
+	 * @Return: purchased items in string
 	 * 
 	 * */
-	public String completePurchase(String itemIdxs, Float total) {
+	public void completePurchase(String itemIdxs, Float budget) {
 		String purchasedItems = "You have purchased:\n";
+		Float total = 0.0f;
 		Float remainingValue = 0.0f;
 		
 		//declare/create arraylist for key of mapped items
@@ -155,18 +162,123 @@ public class MySessionCart implements Cart{
 			String priority = sortedKeys.get(idx);//priority sorted is key
 			String iNum = mappedItems.get(priority);//item number is value
 			myStore.getItemPrice(Integer.parseInt(iNum));//individual prices of items
-			purchasedItems += myStore.getItemName(Integer.parseInt(iNum)).concat("\n");//individual name of items
+			purchasedItems += myStore.getItemName(Integer.parseInt(iNum)).concat("-");//individual name of items
+			
+			total += getPricesInCart(iNum);
 			
 		}
 		
 		
 		System.out.println("Total Price: $".concat(String.format("%.2f", total)));
-		remainingValue = 59 - total;
+		remainingValue = budget - total;
 		
 		System.out.println("Your remaining value is: ".concat(String.format("%.2f", remainingValue)));
 		
-		return purchasedItems;
+		printToFile(purchasedItems);
+		
+//		return null;
 	}//end method
+	
+	/*
+	 * @Name: printToFile
+	 * @Function/Purpose: read/write to file
+	 * 
+	 * @Parameters: which item(s) was added 
+	 * 
+	 * @Additional Comments: 
+	 * @Return: void
+	 * 
+	 * */	
+	private void printToFile(String purchasedItems) {
+		
+		String fileName = shoppingListFile;
+		PrintWriter outputStream = null;
+		String items[] = purchasedItems.split("-");
+		
+		try {
+			
+			outputStream = new PrintWriter(fileName);
+			
+		} catch (FileNotFoundException e) {
+			
+			System.out.println("Error opening the file" + fileName);
+			e.printStackTrace();
+			System.exit(0);
+			
+		}//end try catch block
+		
+		//loop through items purchased
+		for (int lnCnt = 0; lnCnt < items.length; lnCnt++) {
+			
+			//input items by line into the outputStream
+			outputStream.println(items[lnCnt]);	
+			
+		}//end for loop
+		
+		outputStream.close();
+		System.out.println("Those lines were written to " + fileName);
+		
+//		ObjectInputStream inputStream = null;
+		Scanner inputStream = null;
+		try {
+		
+//			inputStream = new ObjectInputStream (new FileInputStream (fileName));
+			inputStream = new Scanner(new File(fileName));
+			
+			
+			while (inputStream.hasNext()) {
+				
+				//print each line out in file
+				String line = inputStream.nextLine();
+				System.out.println(line);
+				
+			}
+			inputStream.close();
+			
+		} catch (FileNotFoundException e) {
+			
+			System.out.println("Problem opening the file" + fileName);
+			e.printStackTrace();
+			System.exit(0);
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+			System.exit(0);
+			
+		}
+
+		
+	}//end method
+	
+	/*
+	 * @Name: runningTotal
+	 * @Function/Purpose: get total from items in cart
+	 * 
+	 * @Parameters: which item was added 
+	 * 
+	 * @Additional Comments: 
+	 * @Return: float running total
+	 * 
+	 * */
+	public float runningTotal(String itemIdxs) {
+		Float runTotal = 0.0f;
+		String items[] = itemIdxs.split("-");
+		for (int cnt = 0; cnt < items.length; cnt++) {
+			
+			runTotal += getPricesInCart(items[cnt]);
+				
+		}//end for loop for iterating through items added
+		return runTotal;
+	}
+
+	@Override
+	public void printToFile() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 
 
 }//end class

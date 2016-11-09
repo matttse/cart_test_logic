@@ -194,26 +194,6 @@ public class UserInputHandler {
 		return validOrder;
 	}//end method
 	
-	/*
-	 * @Name: getMatchedItems
-	 * @Function/Purpose: calculates the sum of an array of numbers
-	 * 
-	 * @Parameters: Float[] and a pre-defined number of numbers
-	 * 
-	 * @Additional Comments: 
-	 * @Return: boolean
-	 * 
-	 * */
-	public boolean getSortedPriority() {
-		//default to return match
-		boolean validOrder = false;
-				
-		
-
-	
-		
-		return validOrder;
-	}//end method
 	
 	/*
 	 * @Name: confirmInput

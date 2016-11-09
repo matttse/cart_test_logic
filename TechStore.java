@@ -35,9 +35,10 @@ public class TechStore extends Product{
 			+ "7.99"
 			+ "-"
 			+ "14.99";
-	private String[] itemName = itemMenu.split("-");
-	private String[] priceIdx = prices.split("-");
-	private String menuLength = Integer.toString(itemName.length);
+	private String[] itemName	= itemMenu.split("-");
+	private String[] priceIdx	= prices.split("-");
+	private String menuLength	= Integer.toString(itemName.length);
+
 	
 	public TechStore() {
 		super();
