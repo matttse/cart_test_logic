@@ -12,6 +12,7 @@ public class shopping_list {
 	//Main method
     public static void main (String [] args)
     {
+    	
     	//initialize and declare global vars
     	int checkoutFlag = 0;
     	String optionOne	= "(1) View Items in Cart";
@@ -20,13 +21,16 @@ public class shopping_list {
     	String optionFour	= "(4) Show Menu Items";
     	String optionFive	= "(5) Show Current Total";
     	String option		= "";
-    	String cartDetails	= "";
+    	
     	String itemIdxs		= "";
-    	int cartSize = 0;
+    	
     	Float runTotal = 0.0f;
     	
     	//instantiate the handler
         UserInputHandler processInput = new UserInputHandler();
+        
+        //instantiate the session cart
+        MySessionCart userCart = new MySessionCart();
         
         //Note to User:
         System.out.println("Remember, you only have $59, this process will exit when your cart exceeds this cost.");
@@ -53,15 +57,13 @@ public class shopping_list {
     		//Checkout option
     		} else if (select == 3) {
     			String displayPurchases = "";
-    			if (runTotal == 0.0 || cartDetails == "") {
+    			if (userCart.mappedItems.isEmpty() == true) {
     				
     				System.out.println("You do not have any items in your cart to purchase/checkout.");
     				
     			} else {
-    				//instantiate the optionHandler
-        	        optionHandler selectInput = new optionHandler();
         	        
-    				displayPurchases = selectInput.completePurchase(cartDetails, itemIdxs, runTotal);
+    				displayPurchases = userCart.completePurchase(itemIdxs, runTotal);
     				System.out.println(displayPurchases);
     			}
     			
@@ -72,66 +74,80 @@ public class shopping_list {
     		
     		//Process options
     		} else {
-				//instantiate the optionHandler
-    	        optionHandler selectInput = new optionHandler();
     	        
     	        //show menu
     			if (select == 4) {
     				
-        	        selectInput.showMenu();
+        	        userCart.myStore.showCatalog();
     				
         	    //add items to cart
     			} else if (select == 2){
     				
-					String itemNum = "";
-					String priority = "";
+					String itemNum = "-1";
+					String priority = "-1";
 					
-					itemNum = processInput.getNum("Enter Item Number(#) to add to cart: ", 0);
-		            priority = processInput.getString("Enter the priority for this item (A-G) ");
+					
+					while (Integer.parseInt(itemNum) == -1 || 
+							(Integer.parseInt(itemNum) > Integer.parseInt(userCart.myStore.Qty)) ){
+						
+						itemNum = processInput.getNum("Enter Item Number(#) to add to cart: ", 0);	
+						
+						if (Integer.parseInt(priority) > Integer.parseInt(userCart.myStore.Qty)) {
+						
+							System.out.println("Please enter a valid priority");
+					
+						}
+						
+					}//end while check for valid item numbers
+					
+					while (Integer.parseInt(priority) == -1 || 
+							(Integer.parseInt(priority) > Integer.parseInt(userCart.myStore.Qty)) ){
+						priority = processInput.getNum("Enter the priority for this item (1-7) ", 0);
+						
+						if (Integer.parseInt(priority) > Integer.parseInt(userCart.myStore.Qty)) {
+							System.out.println("Please enter a valid priority");
+						}
+						
+					}//end while check for valid priorities
+					
+		            
 					
 					//add to a running Total
-					runTotal += selectInput.getPricesInCart(itemNum);
+					runTotal += userCart.getPricesInCart(itemNum);
 					
 					if (runTotal > 59) {
 						System.out.println("You cannot add to cart, more than $59");
 						
 						//adjust running Total
-						runTotal -= selectInput.getPricesInCart(itemNum);
+						runTotal -= userCart.getPricesInCart(itemNum);
 					} else {
 						
 			            itemIdxs += itemNum.concat("-");
 			            
 			            //add to session cart
-						cartDetails += selectInput.addItemToCart(cartDetails, itemNum, cartSize, priority);
-						
-						//increment cart size
-						cartSize++;
+			            userCart.addItem(itemNum, priority);
+
 					}
 				
     			} else {
     				
     				//view cart if not empty
-    				if (select == 1 && cartDetails != "") {
+    				if (select == 1 && userCart.mappedItems.isEmpty() != true) {
     					
-    					System.out.println(selectInput.getCartDescription(itemIdxs));
+    					System.out.println(userCart.viewCart(itemIdxs));
     				
     				//cart is empty
-    				} else if (cartDetails == "") {
+    				} else if (userCart.mappedItems.isEmpty() == true) {
     					
     					System.out.println("Your cart is empty");
     					
     				}//end if get cart descriptions
     				
     				//check running total
-    				if (select == 5 && runTotal != 0) {
+    				if (select == 5) {
     					
     					System.out.print("Your total is: $");
     					System.out.println(runTotal);
-    					
-    				//no total
-    				} else if (runTotal ==0.00) {
-    					
-    					System.out.println("Your total is $0.00");
     					
     				}//end if running total display
     				

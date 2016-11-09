@@ -6,7 +6,7 @@
  * @Date 07/01/2014 
  *
  */
-public class inputValidator {
+public class InputValidator {
 	
 	//Global var declarations	
 	private String validationErrors = "";
@@ -84,7 +84,7 @@ public class inputValidator {
 		if (badChars != "") {
 			
 			//instantiate getErrors to get bad string if necessary
-			errorGetter getErrors = new errorGetter();
+			ErrorGetter getErrors = new ErrorGetter();
 			
 			validationErrors = getErrors.getErrors(badChars);
 			

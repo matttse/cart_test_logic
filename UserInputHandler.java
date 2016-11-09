@@ -1,12 +1,13 @@
-import java.util.Arrays;
-import java.util.Scanner;
-
 /**
  * @Program_Name UserInputHandler
  * @Author Matthew Tse
  * @Date 07/01/2014 
  *
  */
+
+import java.util.Arrays;
+import java.util.Scanner;
+
 public class UserInputHandler {
 	
 	//Declare and initialize global variables
@@ -32,7 +33,7 @@ public class UserInputHandler {
 	public String getString(String inputString) {
 		boolean valid = false;
 		int tryCnt = 0;
-		inputValidator validateInput = new inputValidator();
+		InputValidator validateInput = new InputValidator();
 		System.out.println(inputString);
 		
 		
@@ -78,7 +79,7 @@ public class UserInputHandler {
 	public String getNum(String inputString, int typeFlag) {
 		boolean valid = false;
 		int tryCnt = 0;
-		inputValidator validateInput = new inputValidator();
+		InputValidator validateInput = new InputValidator();
 		System.out.println(inputString);		
 		
 		while (valid != true && tryCnt <3) {		
@@ -172,43 +173,47 @@ public class UserInputHandler {
 	 * @Return: boolean
 	 * 
 	 * */
-	public boolean getMatchedItems(String list, String order) {
+	public boolean getMatchedItems(String list, String compareValue) {
 		//default to return match
 		boolean validOrder = false;
+		String menu[] = list.split("-");
 		
-		for (String menu : list.split("-")) {
-			if (menu.equals(order)) {
+		for (int idx = 0; idx < menu.length; idx++) {
+		
+			if (menu[idx].equals(compareValue)) {
 				validOrder = true;
 				break;
 			} else {
 				validOrder = false;
-			}
+				
+			}		
+		
+
 		}
 		
 		return validOrder;
-	}
+	}//end method
 	
 	/*
-	 * @Name: isGreaterThanZero
-	 * @Function/Purpose: compares integer to 0
+	 * @Name: getMatchedItems
+	 * @Function/Purpose: calculates the sum of an array of numbers
 	 * 
-	 * @Parameters: a number formatted in String
+	 * @Parameters: Float[] and a pre-defined number of numbers
 	 * 
 	 * @Additional Comments: 
 	 * @Return: boolean
 	 * 
 	 * */
-	public boolean isGreaterThanZero(String number) {
-		boolean validNum = false;
-		int num = 0;
-		num = Integer.parseInt(number);
-		if (num > 0) {
-			validNum = true;
-		} else {
-			validNum = false;
-		}
-		return validNum;
-	}
+	public boolean getSortedPriority() {
+		//default to return match
+		boolean validOrder = false;
+				
+		
+
+	
+		
+		return validOrder;
+	}//end method
 	
 	/*
 	 * @Name: confirmInput
