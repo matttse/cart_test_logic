@@ -9,7 +9,7 @@
 public class inputValidator {
 	
 	//Global var declarations	
-	String validationErrors;
+	private String validationErrors = "";
 	
 	/*
 	 * @Name: validate
@@ -83,8 +83,11 @@ public class inputValidator {
 
 		if (badChars != "") {
 			
+			//instantiate getErrors to get bad string if necessary
 			errorGetter getErrors = new errorGetter();
+			
 			validationErrors = getErrors.getErrors(badChars);
+			
 			System.out.println(validationErrors);
 			
 			validInput = false;

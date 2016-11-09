@@ -10,18 +10,25 @@ import java.util.Scanner;
 public class UserInputHandler {
 	
 	//Declare and initialize global variables
-	Scanner keyboardInput;
-	String displayText, outputText;
-	
-	double userDoubleInput = 0.0;
-	int userIntInput = 0;
+	private Scanner keyboardInput;
+	private String outputText;
 	
 	public UserInputHandler() {		
-//		System.out.println(displayText);
+
 		keyboardInput = new Scanner(System.in);
 		
 	}
 
+	/*
+	 * @Name: getString
+	 * @Function/Purpose: gets a string value
+	 * 
+	 * @Parameters: string of number, flex the type flag 
+	 * 
+	 * @Additional Comments: 
+	 * @Return: boolean
+	 * 
+	 * */
 	public String getString(String inputString) {
 		boolean valid = false;
 		int tryCnt = 0;
@@ -58,6 +65,16 @@ public class UserInputHandler {
 		
 	}//end method
 	
+	/*
+	 * @Name: getNum
+	 * @Function/Purpose: gets a numerical value
+	 * 
+	 * @Parameters: string of number, flex the type flag 
+	 * 
+	 * @Additional Comments: flags are defined in inputValidator (0 = integer, 1 = float, 2 = double)
+	 * @Return: string
+	 * 
+	 * */
 	public String getNum(String inputString, int typeFlag) {
 		boolean valid = false;
 		int tryCnt = 0;
@@ -93,7 +110,16 @@ public class UserInputHandler {
 		
 	}//end method
 
-	
+	/*
+	 * @Name: processOutput
+	 * @Function/Purpose: removes whitespace from a string
+	 * 
+	 * @Parameters: string
+	 * 
+	 * @Additional Comments: 
+	 * @Return: string
+	 * 
+	 * */
 	public String processOutput(String processInput) {
 		String processOuput;
 		
@@ -102,43 +128,107 @@ public class UserInputHandler {
 		return processOuput;
 	}
 	
+	/*
+	 * @Name: getAvgNum
+	 * @Function/Purpose: calculates the avg of an array of numbers
+	 * 
+	 * @Parameters: Float, which is the summation of numbers, and a pre-defined number in pool to avg
+	 * 
+	 * @Additional Comments: 
+	 * @Return: float
+	 * 
+	 * */
 	public float getAvgNum(Float sum, int numElements) {
 		float avg = 0.0f;
 		avg = sum / numElements;
 		return avg;
-	}
+	}//end method
 	
+	/*
+	 * @Name: getSumNum
+	 * @Function/Purpose: calculates the sum of an array of numbers
+	 * 
+	 * @Parameters: Float[] and a pre-defined number of numbers
+	 * 
+	 * @Additional Comments: 
+	 * @Return: float
+	 * 
+	 * */
 	public float getSumNum(Float[] arrayNums, int sizeArray) {
 		float sum = 0.0f;
 		for (int arrayCnt = 0; arrayCnt<sizeArray; arrayCnt++) {
 			sum += arrayNums[arrayCnt];
 		}
 		return sum;
-	}
-	
-	
+	}//end method
 	
 	/*
-	 * @Name: confirm
-	 * @Function/Purpose: Called from validate.
+	 * @Name: getMatchedItems
+	 * @Function/Purpose: calculates the sum of an array of numbers
 	 * 
-	 * @Parameters: String input, int flag 
-	 * (i.e. 0 = String)
-	 * @Additionl Comments: All input must be passed as a string.
-	 * Flags:
-	 * 0 = String
-	 * 1 = int
-	 * 2 = double
+	 * @Parameters: Float[] and a pre-defined number of numbers
+	 * 
+	 * @Additional Comments: 
+	 * @Return: boolean
+	 * 
+	 * */
+	public boolean getMatchedItems(String list, String order) {
+		//default to return match
+		boolean validOrder = false;
+		
+		for (String menu : list.split("-")) {
+			if (menu.equals(order)) {
+				validOrder = true;
+				break;
+			} else {
+				validOrder = false;
+			}
+		}
+		
+		return validOrder;
+	}
+	
+	/*
+	 * @Name: isGreaterThanZero
+	 * @Function/Purpose: compares integer to 0
+	 * 
+	 * @Parameters: a number formatted in String
+	 * 
+	 * @Additional Comments: 
+	 * @Return: boolean
+	 * 
+	 * */
+	public boolean isGreaterThanZero(String number) {
+		boolean validNum = false;
+		int num = 0;
+		num = Integer.parseInt(number);
+		if (num > 0) {
+			validNum = true;
+		} else {
+			validNum = false;
+		}
+		return validNum;
+	}
+	
+	/*
+	 * @Name: confirmInput
+	 * @Function/Purpose: asks the user to confirm input
+	 * 
+	 * @Parameters: null
+	 * 
+	 * @Additional Comments: 
+	 * @Return: boolean
 	 * 
 	 * */
 	public boolean confirmInput() {
 		int confirmCntTry = 0;
 		boolean valid = false;
-		
-		System.out.println("Is this correct (yes/no): ");
-		String confirmInput = keyboardInput.nextLine();		
+		String confirmMsg = "Is this correct (yes/no): ";	
 		
 		while (confirmCntTry < 3){
+			
+			System.out.println(confirmMsg);
+			String confirmInput = keyboardInput.nextLine();	
 			
 			if("yes".equalsIgnoreCase(confirmInput) || "y".equalsIgnoreCase(confirmInput)) {
 				
@@ -152,18 +242,27 @@ public class UserInputHandler {
 				
 			} else {
 				
-				StringBuffer outputBuffer = new StringBuffer(40);
-				String outputMsg = "Please type in yes or no. (Number of tries left: ";
+				String outputMsg = "Please type in yes or no. (Number of tries left: ";	
+				System.out.print(outputMsg);
+				System.out.print(2 - confirmCntTry);
+				System.out.println(")");
 				
-				confirmCntTry++;
-				outputMsg = outputBuffer.append(3 - confirmCntTry).append(")").toString();
-				System.out.println(outputMsg);
-				
-			}	
+			}
+			confirmCntTry++;
+			
+			if (confirmCntTry == 3) {
+				exit(0);
+			}
 			
 		}
+		
 		return valid;
 		
 	}//end method
 	
+    //standard system exit.
+	public void exit(int status) {
+		System.exit(status);
+		return;
+	}
 }//end class
